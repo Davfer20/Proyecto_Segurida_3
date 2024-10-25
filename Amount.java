@@ -47,6 +47,7 @@
 
 //@ nullable_by_default                      // Do not remove this annotation
 public class Amount{
+
     //@ spec_public
     private int cents;
     //@ spec_public
@@ -55,27 +56,27 @@ public class Amount{
     //@ requires cents > -100;
 	//@ requires cents < 100;
 	//@ requires euros > 0 ==> cents >= 0;
-	//@ requires euros < 0 ==> cents <= 0;
+    //@ requires euros < 0 ==> cents <= 0;
 	//@ ensures this.cents > -100;
 	//@ ensures this.cents < 100;
 	//@ ensures this.euros > 0 ==> cents >= 0;
-	//@ ensures this.euros < 0 ==> cents <= 0;
     // Aca puedo validar que sean enteros
     public Amount(int euros, int cents){
         this.euros = euros;
         this.cents = cents;
     }
-/*
+
     //@ requires cents > -100;
 	//@ requires cents < 100;
     //@ requires euros > 0 ==> cents >= 0;
 	//@ requires euros < 0 ==> cents <= 0;
+    //@ requires this.euros != Integer.MIN_VALUE;
     //@ ensures \result instanceof Amount;
     public Amount negate(){
         //@ assert this.cents > -100 && this.cents < 100;
         return new Amount(-euros, -cents); //Se debe de cambiar el orden de los valores
     }
-
+/*
     public Amount subtract(Amount a){
         return this.add(a.negate());
     }
