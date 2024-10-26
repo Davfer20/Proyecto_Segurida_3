@@ -76,12 +76,17 @@ public class Amount{
         //@ assert this.cents > -100 && this.cents < 100;
         return new Amount(-euros, -cents); //Se debe de cambiar el orden de los valores
     }
-/*
+    //@ requires this.euros != Integer.MIN_VALUE;
+    //@ ensures \result instanceof Amount;
+    //@ ensures \result.euros == -euros && \result.cents == -cents;
     public Amount subtract(Amount a){
         return this.add(a.negate());
     }
 
-
+    //@ ensures \result instanceof Amount;
+    //@ ensures \result.euros >= 0;
+    //@ ensures \result.cents >= 0;
+    //@ ensures \result.euros >= 0 ==> \result.cents >= 0;
     public Amount add(Amount a){
         int new_euros = euros + a.euros;
         int new_cents = cents + a.cents; 
@@ -103,6 +108,10 @@ public class Amount{
         }
         return new Amount(new_euros,new_cents);
     }
+    
+    
+
+    /*
     */
     //@ requires a != null; 
     //@ ensures \result == (euros == a.euros && cents == a.cents);
