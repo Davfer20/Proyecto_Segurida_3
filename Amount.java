@@ -47,23 +47,25 @@
 
 //@ nullable_by_default                      // Do not remove this annotation
 public class Amount{
-
     //@ spec_public
     private int cents;
     //@ spec_public
     private int euros; 
-
     //@ requires cents > -100;
 	//@ requires cents < 100;
 	//@ requires euros > 0 ==> cents >= 0;
     //@ requires euros < 0 ==> cents <= 0;
+    //@ ensures this.euros == euros;
+    //@ ensures this.cents == cents;
 	//@ ensures this.cents > -100;
 	//@ ensures this.cents < 100;
 	//@ ensures this.euros > 0 ==> cents >= 0;
     // Aca puedo validar que sean enteros
     public Amount(int euros, int cents){
         this.euros = euros;
+        //@ assert this.euros == euros;
         this.cents = cents;
+        //@ assert this.cents == cents;
     }
 
     //@ requires cents > -100;
@@ -71,23 +73,35 @@ public class Amount{
     //@ requires euros > 0 ==> cents >= 0;
 	//@ requires euros < 0 ==> cents <= 0;
     //@ requires this.euros != Integer.MIN_VALUE;
+    //@ requires this.cents != Integer.MIN_VALUE;
     //@ ensures \result instanceof Amount;
+    //@ ensures \result != null;
     public Amount negate(){
         //@ assert this.cents > -100 && this.cents < 100;
         return new Amount(-euros, -cents); //Se debe de cambiar el orden de los valores
     }
-    //@ requires this.euros != Integer.MIN_VALUE;
-    //@ ensures \result instanceof Amount;
-    //@ ensures \result.euros == -euros && \result.cents == -cents;
-    public Amount subtract(Amount a){
+    //@ requires a != null;
+    //@ requires a.euros != Integer.MIN_VALUE;
+    //@ requires a.cents != Integer.MIN_VALUE;
+    //@ requires a.euros - a.euros <= Integer.MAX_VALUE;
+    //@ requires a.euros - a.euros > Integer.MIN_VALUE;
+    //@ requires a.cents - a.cents <= Integer.MIN_VALUE;
+    //@ requires a.cents - a.cents > Integer.MIN_VALUE;
+    //@ ensures \result != null;
+    public Amount subtract(Amount a) {
         return this.add(a.negate());
     }
-
+    //@ requires a != null;
+    //@ requires a.euros + euros < Integer.MAX_VALUE;
+    //@ requires a.cents + cents <= Integer.MAX_VALUE;
+    //@ requires a.euros + euros >= Integer.MIN_VALUE;
+    //@ requires a.cents + cents >= Integer.MIN_VALUE;
+    //@ requires ((a.cents + cents >= 0) && (a.cents + cents < 100)) || ((a.cents + cents < 0) && (a.cents + cents > -100));
+    //@ ensures \result != null;
     //@ ensures \result instanceof Amount;
-    //@ ensures \result.euros >= 0;
-    //@ ensures \result.cents >= 0;
-    //@ ensures \result.euros >= 0 ==> \result.cents >= 0;
     public Amount add(Amount a){
+        //@ assert euros + a.euros <= Integer.MAX_VALUE && euros + a.euros >= Integer.MIN_VALUE;
+        //@ assert cents + a.cents <= Integer.MAX_VALUE && cents + a.cents >= Integer.MIN_VALUE;
         int new_euros = euros + a.euros;
         int new_cents = cents + a.cents; 
         if (new_cents <= -100) { // Ademas debe incluir el cero para cuando no hay centavos  
@@ -108,11 +122,6 @@ public class Amount{
         }
         return new Amount(new_euros,new_cents);
     }
-    
-    
-
-    /*
-    */
     //@ requires a != null; 
     //@ ensures \result == (euros == a.euros && cents == a.cents);
     //@ ensures \result == true || \result == false;
@@ -121,13 +130,5 @@ public class Amount{
         if (a==null) return false;
         else return (euros == a.euros && cents == a.cents);
     }
-
-    public int getEuros(){ // Se necesita si se quiere tomar el valor del euro
-        return this.euros;
-    }
-
-    public int getCents(){ // Se necesita si se quiere tomar el valor de los centavos
-        return this.cents;
-    }
-
+   
 } 
